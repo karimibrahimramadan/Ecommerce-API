@@ -3,6 +3,11 @@ const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
+const xss = require("xss-clean");
+const hpp = require("hpp");
+const cors = require("cors");
+const path = require("path");
 const connectDB = require("./config/db");
 const routesController = require("./routes/routesController");
 const errorHandler = require("./controllers/errorController");
@@ -19,6 +24,11 @@ app.use(cookieParser());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
+app.use(mongoSanitize());
+app.use(xss());
+app.use(hpp());
+app.use(cors());
+app.use("/api/v1/uploads", express.static(path.join(__dirname, "./uploads")));
 
 // routes
 app.use("/api/v1/auth", routesController.authRouter);
